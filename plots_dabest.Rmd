@@ -1,0 +1,73 @@
+---
+title: "Data Explorer"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: columns
+    social: menu
+    source_code: embed
+runtime: shiny
+---
+
+```{r global, include=FALSE}
+# load data in 'global' chunk so it can be shared by all users of the dashboard
+
+library(dabestr)
+
+
+dorsi_rt_obli_rt = read.csv("dorsi_rt_obli_rt_3.csv")
+dorsi_lt_obli_lt = read.csv("dorsi_lt_obli_lt_3.csv")
+dorsi_rt_obli_lt = read.csv("dorsi_rt_obli_lt_3.csv")
+dorsi_lt_obli_rt = read.csv("dorsi_lt_obli_rt_3.csv")
+d = read.csv("dorsi_rt_obli_rt_3.csv")
+```
+
+Inputs {.sidebar}
+-----------------------------------------------------------------------
+
+```{r}
+
+selectInput('dataset', 'Dataset',c('dorsi_rt_obli_rt','dorsi_lt_obli_lt','dorsi_rt_obli_lt','dorsi_lt_obli_rt'),'dorsi_rt_obli_rt')
+
+selectInput('y', 'Parameter', names(d[,4:9]), names(d)[[2]])
+
+
+```
+
+Outputs
+-----------------------------------------------------------------------
+
+### Box plot
+
+```{r}
+d <- reactive(get(input$dataset))
+renderPlot({
+  d1=d()
+
+if (input$y=="gband.2.16")
+  {two.group.unpaired <- d1 %>% dabest(group,gband.2.16 ,idx = c("A", "B"),paired=F) 
+  a=mean_diff(two.group.unpaired)}
+
+if (input$y=="gband.17.30")
+  {two.group.unpaired <- dabest(d1,group,gband.17.30 ,idx = c("A", "B"),paired=F)
+ a=mean_diff(two.group.unpaired)}
+ 
+if (input$y=="gband.31.60")
+  {two.group.unpaired <- dabest(d1,group,gband.31.60 ,idx = c("A", "B"),paired=F)
+a=mean_diff(two.group.unpaired)}
+
+if (input$y=="mband.2.16")
+  {two.group.unpaired <- dabest(d1,group,mband.2.16 ,idx = c("A", "B"),paired=F)
+a=mean_diff(two.group.unpaired)}
+
+if (input$y=="mband.17.30")
+  {two.group.unpaired <- dabest(d1,group,mband.17.30 ,idx = c("A", "B"),paired=F)
+a=mean_diff(two.group.unpaired)}
+
+if (input$y=="mband.31.60")
+  {two.group.unpaired <- dabest(d1,group,mband.31.60 ,idx = c("A", "B"),paired=F)
+a=mean_diff(two.group.unpaired)}
+
+plot(a)
+ 
+})
+```
